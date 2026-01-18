@@ -2,7 +2,7 @@
 Slightly edited by me
 Metcalfe (/f/t/76212) and basqpcez (https://hub.docker.com/r/basqpcez/mam-point-spender)
 
-Run as cronjob: 42 7,19 * * * .../mam_spendingbonuspoints.sh > /tmp/Spend.log 2>/tmp/Spend.err
+Run as cronjob: 42 7,19 * * * .../MAM_SpendingBonusPoints.sh > /tmp/Spend.log 2>/tmp/Spend.err
 #################
 
 #!/bin/bash
