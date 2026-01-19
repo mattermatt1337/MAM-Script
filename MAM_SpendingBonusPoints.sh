@@ -74,7 +74,7 @@ then
     if [ $POINTS -lt 50000 ]
     then
       echo "Not enough points, aborting"
-      #exit 1
+      exit 1
     fi
 
     curl -s -b ${WORKDIR}/MAM.cookies -c ${WORKDIR}/MAM.cookies $WEDGEURL
