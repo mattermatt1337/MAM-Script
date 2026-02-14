@@ -96,7 +96,8 @@ then
   fi
 fi
 
-for i in 100 20 5 1
+# MAM has updated and no longer allows automated spenders to buy under 50GiB
+for i in 100 50
 do
   echo Checking to spend ${i}GB
   UPLOADREQUIRED=`expr $i \* 500 + ${BUFFER}`
