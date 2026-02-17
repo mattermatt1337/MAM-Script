@@ -85,15 +85,26 @@ then
 fi
 
 # Maximize VIP
-if [ "x$VIP" != "x" ]
-then
-  VIPRESULT=`curl -s -b ${WORKDIR}/MAM.cookies -c ${WORKDIR}/MAM.cookies ${VIPURL}${TIMESTAMP} 2>/dev/null | jq .success`
-  if [ "x$VIPRESULT" != "xtrue" ]
-  then
-    echo VIP purchase failed!
-  else
-    echo VIP purchased!
-  fi
+if [ "x$VIP" != "x" ]; then
+    # Parse current status and calculate time
+    CLASS=$(jq -r '.classname' "${WORKDIR}/MAM.json")
+    EXPIRY=$(date -d "$(jq -r '.vip_until' "${WORKDIR}/MAM.json")" +%s)
+    REMAINING_WEEKS=$(echo "scale=2; ($EXPIRY - $(date +%s)) / 604800" | bc)
+    THRESHOLD_WEEKS=11
+
+    if [[ "$CLASS" != "VIP" ]] || (( $(echo "$REMAINING_WEEKS < $THRESHOLD_WEEKS" | bc -l) )); then
+        RES=$(curl -s -b "${WORKDIR}/MAM.cookies" -c "${WORKDIR}/MAM.cookies" "${VIPURL}${TIMESTAMP}")
+        
+        if [ "$(echo "$RES" | jq -r .success)" = "true" ]; then
+            echo "VIP Topped Up."
+        else
+            echo "VIP Purchase Failed: $(echo "$RES" | jq -r '.error // .msg')"
+
+            echo "Raw Response: $RES"
+        fi
+    else
+        echo "Skipping VIP: $REMAINING_WEEKS weeks remaining (Threshold: $THRESHOLD_WEEKS)."
+    fi
 fi
 
 # MAM has updated and no longer allows automated spenders to buy under 50GiB
